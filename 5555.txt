@@ -1,0 +1,101 @@
+import os
+
+def load_contacts():
+    contacts = []
+    if os.path.exists('phonebook.txt'):
+        with open('phonebook.txt', 'r', encoding='utf-8') as file:
+            for line in file:
+                contacts.append(line.strip().split(','))
+    return contacts
+
+def save_contacts(contacts):
+    with open('phonebook.txt', 'w', encoding='utf-8') as file:
+        for contact in contacts:
+            file.write(','.join(contact) + '\n')
+
+def display_contacts(contacts):
+    if not contacts:
+        print("Справочник пуст.")
+    else:
+        for i, contact in enumerate(contacts, 1):
+            print(f"{i}. Фамилия: {contact[0]}, Имя: {contact[1]}, Отчество: {contact[2]}, Телефон: {contact[3]}")
+
+def add_contact(contacts):
+    surname = input("Введите фамилию: ")
+    name = input("Введите имя: ")
+    patronymic = input("Введите отчество: ")
+    phone = input("Введите номер телефона: ")
+    contacts.append([surname, name, patronymic, phone])
+    print("Контакт добавлен.")
+
+def search_contact(contacts):
+    search_term = input("Введите данные для поиска: ").lower()
+    found = False
+    for i, contact in enumerate(contacts, 1):
+        if search_term in [item.lower() for item in contact]:
+            print(f"{i}. Фамилия: {contact[0]}, Имя: {contact[1]}, Отчество: {contact[2]}, Телефон: {contact[3]}")
+            found = True
+    if not found:
+        print("Контакт не найден.")
+    return found
+
+def edit_contact(contacts):
+    if search_contact(contacts):
+        index = int(input("Введите номер контакта для редактирования: ")) - 1
+        if 0 <= index < len(contacts):
+            print("Оставьте поле пустым, если не хотите его менять.")
+            surname = input(f"Фамилия ({contacts[index][0]}): ") or contacts[index][0]
+            name = input(f"Имя ({contacts[index][1]}): ") or contacts[index][1]
+            patronymic = input(f"Отчество ({contacts[index][2]}): ") or contacts[index][2]
+            phone = input(f"Телефон ({contacts[index][3]}): ") or contacts[index][3]
+            contacts[index] = [surname, name, patronymic, phone]
+            print("Контакт изменен.")
+        else:
+            print("Неверный номер контакта.")
+    else:
+        print("Редактирование невозможно, контакт не найден.")
+
+def delete_contact(contacts):
+    if search_contact(contacts):
+        index = int(input("Введите номер контакта для удаления: ")) - 1
+        if 0 <= index < len(contacts):
+            deleted = contacts.pop(index)
+            print(f"Контакт удален: {deleted[0]} {deleted[1]}")
+        else:
+            print("Неверный номер контакта.")
+    else:
+        print("Удаление невозможно, контакт не найден.")
+
+def main():
+    contacts = load_contacts()
+    while True:
+        print("\nТелефонный справочник")
+        print("1. Показать все контакты")
+        print("2. Добавить новый контакт")
+        print("3. Поиск контакта")
+        print("4. Изменить контакт")
+        print("5. Удалить контакт")
+        print("6. Сохранить и выйти")
+        
+        choice = input("Выберите действие (1-6): ")
+        
+        if choice == '1':
+            display_contacts(contacts)
+        elif choice == '2':
+            add_contact(contacts)
+        elif choice == '3':
+            search_contact(contacts)
+        elif choice == '4':
+            edit_contact(contacts)
+        elif choice == '5':
+            delete_contact(contacts)
+        elif choice == '6':
+            save_contacts(contacts)
+            print("Данные сохранены. До свидания!")
+            break
+        else:
+            print("Неверный выбор. Попробуйте снова.")
+
+if __name__ == "__main__":
+    main()
+
